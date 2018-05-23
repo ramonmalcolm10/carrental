@@ -42,8 +42,8 @@
                         <li><a href="">Dispute</a></li>
                         <li><a href="">About</a></li>
                         <li><a href="">Contact</a></li>
-                        <li><a href="./login.html">Login</a></li>
-                        <li><a href="./register.html">Register</a></li>
+                        <li><a href="login.php">Login</a></li>
+                        <li><a href="register.php">Register</a></li>
                     </ul>
                     <ul class="side-nav" id="mobile-demo">
                         <li><a href="./index.html">Home</a></li>
@@ -53,6 +53,15 @@
                         <li><a href="./login.html">Login</a></li>
                         <li><a href="./register.html">Register</a></li>
                     </ul>
+					
+					<!-- Dropdown Structure -->
+					<ul id="dropdown1" class="dropdown-content">
+					  <li><a href="#!">one</a></li>
+					  <li><a href="#!">two</a></li>
+					  <li class="divider"></li>
+					  <li><a href="#!">three</a></li>
+					</ul>
+					
                 </div>
             </nav>
         </div>

@@ -1,3 +1,70 @@
+<?php
+require_once("config/config.php");
+if (isset($_POST['register'])){
+
+	$email = trim($_POST['email']);
+	$tele = trim($_POST['tele']);
+    $password1 = trim($_POST['password1']);
+    $password2 = trim($_POST['password2']);
+	
+	if ($email == "" || $password1 == "" || $password2 == "") {
+
+        $_SESSION["errorType"] = "danger";
+        $_SESSION["errorMsg"] = "Enter manadatory fields";
+		redirect("login.php");
+    }
+	if ($password1 != $password2) {
+
+        $_SESSION["errorType"] = "danger";
+        $_SESSION["errorMsg"] = "Password Doesn't Match";
+		redirect("login.php");
+    }
+	
+	$sql = "SELECT * FROM User WHERE email = :email";
+    try {
+      
+            $stmt = $DB->prepare($sql);
+
+            // bind the values
+            $stmt->bindValue(":email", $email);
+           
+            // execute Query
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+
+            if (count($results) == 0) {
+				$sql = "INSERT INTO User  (email, tele, password) VALUES " . " (:email, :tele, :password)";
+				$stmt = $DB->prepare($sql);
+
+				$stmt->bindValue(":email", $email);
+				$stmt->bindValue(":tele", $tele);
+				$stmt->bindValue(":password", md5($password));
+				if($stmt->execute()){
+					$_SESSION["errorType"] = "success";
+					$_SESSION["errorMsg"] = "You have successfully Register";
+					$_SESSION["user_email"] = "";
+					redirect("login.php");
+				}
+				else {
+					$_SESSION["errorType"] = "danger";
+					$_SESSION["errorMsg"] = "Fail to register try again";
+					redirect("register.php");
+				}
+			}
+			else{
+				$_SESSION["errorType"] = "danger";
+				$_SESSION["errorMsg"] = "Email Already Exist";
+				redirect("register.php");
+			}
+	 } catch (Exception $ex) {
+
+		$_SESSION["errorType"] = "danger";
+		$_SESSION["errorMsg"] = $ex->getMessage();
+		redirect("register.php");
+	}
+	
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -27,8 +94,17 @@
     </head>
     <body>
         <div class="row">
+		     <?php  if ($ERROR_MSG <> "") { ?>
+                    <div class="col-lg-12">
+                        <div class="alert alert-dismissable alert-<?php echo $ERROR_TYPE ?>">
+                            <button data-dismiss="alert" class="close" type="button">x</button>
+                            <p><?php echo $ERROR_MSG; ?></p>
+                        </div>
+                        <div style="height: 10px;">&nbsp;</div>
+                    </div>
+                <?php } ?>
             <div class="col s12 z-depth-5 card-panel">
-                <form action="./login.php" method="POST" >
+                <form action="register.php" method="POST" >
                     <div class="row">
                         <div class="input-field col s12 center">
                             <p class="center login-form-text">Register</p>
@@ -44,7 +120,7 @@
                     <div class="row margin">
                         <div class="input-field col s12">
                             <i class="material-icons prefix">contact_phone</i>
-                            <input id="phone" name="phone" type="number" class="validate" required>
+                            <input id="phone" name="tele" type="number" class="validate" required>
                             <label for="phone" data-error="wrong" data-success="right">Phone</label>
                         </div>
                     </div>
@@ -64,7 +140,7 @@
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <button class="btn waves-effect waves-light blue col s12" type="submit" name="action">Submit</button>
+                            <button class="btn waves-effect waves-light blue col s12" type="submit" name="register">Submit</button>
                         </div>
                     </div>
                 </form>
